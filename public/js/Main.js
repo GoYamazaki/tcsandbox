@@ -10,7 +10,7 @@ let scene = {
 const img_url_params = ['0000FF', '00FF00', 'FF0000'];
 
 window.onload = ()=>{
-    engine = new Engine("sandbox");
+    engine = new GYEngine("sandbox");
 
     const img_url_template = `https://via.placeholder.com/${engine.width}x${engine.height}/`;
     img_url_params.forEach((color, index)=>{

@@ -1,4 +1,4 @@
-class Engine {
+class GYEngine {
     constructor(tag) {
         let canvas = document.getElementById(tag)
         this.width = parseInt(canvas.getAttribute('width'))
