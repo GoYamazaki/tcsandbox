@@ -33,13 +33,10 @@ class GYNode{
         this.animations = [];
     }
 
-    /**
-     * Add Animation
-     * @param type
-     * @param dest Vector2D
-     * @param duration Animation duration in millisec
-     * @param interpolate 'linear' or 'ease-in-out'
-     */
+    get isAnimating(){
+        return this.animations.length !== 0;
+    }
+
     addAnimation(type, dest, duration = 1000, interpolate = 'linear'){
         let interpolateType = GYLinearAnimation;
         const onFinish = ()=>{
@@ -80,12 +77,12 @@ class GYNode{
         ctx.scale(this.transform.scale.x, this.transform.scale.y);
 
         ctx.fillStyle = this.fillStyle;
-        this.drawElement(ctx);
+        this.draw(ctx);
 
         ctx.restore();
     }
 
-    drawElement(){
+    draw(){
         //Do nothing
     }
 
@@ -102,8 +99,34 @@ class GYRect extends GYNode{
         super(transform, fillStyle);
     }
 
-    drawElement(ctx){
+    static create(x,y,w,h,f){
+        let t = new GYTransform();
+        t.pos.x = x;t.pos.y = y;
+        t.scale.x = w;t.scale.y = h;
+
+        return new GYRect(t, f);
+    }
+
+    draw(ctx){
         ctx.fillRect(0,0,1,1);
     }
 }
 
+class GYImage extends GYNode{
+    constructor(transform, image ) {
+        super(transform);
+        this.image = image;
+    }
+
+    static create(x,y,w,h,image){
+        let t = new GYTransform();
+        t.pos.x = x;t.pos.y = y;
+        t.scale.x = w;t.scale.y = h;
+
+        return new GYImage(t, image);
+    }
+
+    draw(ctx){
+        ctx.drawImage(this.image, 0,0,1,1);
+    }
+}

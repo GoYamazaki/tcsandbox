@@ -4,48 +4,59 @@ let looper = {
     lastTick : -1,
 };
 
-const START_BTN_ID = "start_button";
-const STOP_BTN_ID = "stop_button";
+let scene = {
+    current_showing_idx : 0
+};
+const img_url_params = ['0000FF', '00FF00', 'FF0000'];
 
-let rect1;
-
-function init(){
-    let createRect = function (x,y,w,h, f){
-        let t = new GYTransform();
-        t.pos.x = x;t.pos.y = y;
-        t.scale.x = w;t.scale.y = h;
-
-        return new GYRect(t, f);
-    };
-
-    rect1 = createRect(700,700, 100, 100, 'red');
-    // let rect2 = createRect(0,100, 100, 100, 'blue');
-    // let rect3 = createRect(100,0, 100, 100, 'green');
-    // let rect4 = createRect(100,100, 100, 100, 'yellow');
-
+window.onload = ()=>{
     engine = new Engine("sandbox");
-    engine.addNodes(rect1);
 
-    engine.draw(0);
-}
+    const img_url_template = `https://via.placeholder.com/${engine.width}x${engine.height}/`;
+    img_url_params.forEach((color, index)=>{
+        const img = new Image();
+        img.src = img_url_template + color + `?text=${index+1}`;
+        img.onload = ()=>{
+            const img_node = GYImage.create(index*engine.width, 0, engine.width, engine.height, img);
+            scene[`rect${index}`] = img_node;
+            engine.addNodes(img_node);
+            if(Object.keys(scene).length === img_url_params.length){
+                engine.draw(0);
+                looper.updateFuncId = window.requestAnimationFrame(onUpdate);
+            }
+        };
+    });
+};
 
-function onPressedStartBtn(){
-    rect1.addAnimation('translate', new Vector2D(0, 700), 1000, 'linear');
-    rect1.addAnimation('translate', new Vector2D(0, 0), 1000, 'ease-in');
-    rect1.addAnimation('translate', new Vector2D(700, 0), 1000, 'ease-out');
-    rect1.addAnimation('translate', new Vector2D(700, 700), 1000, 'ease-in-out');
-    looper.updateFuncId = window.requestAnimationFrame(onUpdate);
-    document.getElementById(START_BTN_ID).disabled = true;
-    document.getElementById(STOP_BTN_ID).disabled = false;
-}
-
-function onPressedStopBtn(){
-    if(looper.updateFuncId != null){
-        looper.lastTick = -1;
-        window.cancelAnimationFrame(looper.updateFuncId);
-        document.getElementById(START_BTN_ID).disabled = false;
-        document.getElementById(STOP_BTN_ID).disabled = true;
+function move(dir){
+    for(let i = 0;i<img_url_params.length;i++){
+        const rect = scene[`rect${i}`];
+        const rect_pos_source_x = rect.transform.pos.x;
+        const rect_pos_destination_x = rect_pos_source_x + (dir * rect.transform.scale.x);
+        const rect_next_pos = new Vector2D(rect_pos_destination_x, rect.transform.pos.y);
+        rect.addAnimation('translate', rect_next_pos, 1000, 'ease-out');
     }
+}
+
+function onPressedNextBtn(){
+    if(scene['rect0'].isAnimating)
+        return;
+    if(scene.current_showing_idx === img_url_params.length-1)
+        return;
+
+    scene.current_showing_idx ++;
+    move(-1);
+
+}
+
+function onPressedPrevBtn(){
+    if(scene['rect0'].isAnimating)
+        return;
+    if(scene.current_showing_idx === 0)
+        return;
+
+    scene.current_showing_idx --;
+    move(1);
 }
 
 function onUpdate(timestamp){
@@ -61,7 +72,3 @@ function onUpdate(timestamp){
     looper.lastTick = timestamp;
     looper.updateFuncId = window.requestAnimationFrame(onUpdate);
 }
-
-window.onload = ()=>{
-    init();
-};
