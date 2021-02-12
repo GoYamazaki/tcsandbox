@@ -1,12 +1,7 @@
-const express = require('express');
-const app = express();
-const path = require('path');
+const express = require('express')
+const path = require('path')
+const PORT = process.env.PORT || 5000
 
-app.listen(8080);
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Return `NOT FOUND` for other requests
-app.use((req, res) => {
-    res.sendStatus(404);
-});
+express()
+  .use(express.static(path.join(__dirname, 'public')))
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
