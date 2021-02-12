@@ -49,15 +49,16 @@ class GYNode{
         //Select Interpolate
         if(interpolate === "ease-in-out"){
             interpolateType = GYQuadEaseInOutAnimation;
-        } else {
-            interpolateType = GYLinearAnimation;
+        } else if (interpolate === 'ease-in') {
+            interpolateType = GYQuadEaseInAnimation;
+        } else if (interpolate === 'ease-out') {
+            interpolateType = GYQuadEaseOutAnimation;
         }
 
         //Instantiate Animation Object
         if(type === 'translate'){
             const to = [dest.x, dest.y];
             const onStart = ()=>{
-                console.log(`start ${this.transform.pos.x} : ${this.transform.pos.y}`);
                 return [this.transform.pos.x, this.transform.pos.y];
             };
             const onUpd = (progress)=>{

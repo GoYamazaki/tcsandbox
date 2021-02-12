@@ -7,8 +7,9 @@ let looper = {
 const START_BTN_ID = "start_button";
 const STOP_BTN_ID = "stop_button";
 
-window.onload = ()=>{
+let rect1;
 
+function init(){
     let createRect = function (x,y,w,h, f){
         let t = new GYTransform();
         t.pos.x = x;t.pos.y = y;
@@ -17,21 +18,22 @@ window.onload = ()=>{
         return new GYRect(t, f);
     };
 
-    let rect1 = createRect(0,0, 100, 100, 'red');
+    rect1 = createRect(700,700, 100, 100, 'red');
     // let rect2 = createRect(0,100, 100, 100, 'blue');
     // let rect3 = createRect(100,0, 100, 100, 'green');
     // let rect4 = createRect(100,100, 100, 100, 'yellow');
 
-    rect1.addAnimation('translate', new Vector2D(0, 700), 1000, 'linear');
-    rect1.addAnimation('translate', new Vector2D(700, 0), 1000, 'linear');
-    rect1.addAnimation('translate', new Vector2D(0, -700), 1000, 'linear');
-    rect1.addAnimation('translate', new Vector2D(-700, 0), 1000, 'linear');
-
     engine = new Engine("sandbox");
     engine.addNodes(rect1);
-};
+
+    engine.draw(0);
+}
 
 function onPressedStartBtn(){
+    rect1.addAnimation('translate', new Vector2D(0, 700), 1000, 'linear');
+    rect1.addAnimation('translate', new Vector2D(0, 0), 1000, 'ease-in');
+    rect1.addAnimation('translate', new Vector2D(700, 0), 1000, 'ease-out');
+    rect1.addAnimation('translate', new Vector2D(700, 700), 1000, 'ease-in-out');
     looper.updateFuncId = window.requestAnimationFrame(onUpdate);
     document.getElementById(START_BTN_ID).disabled = true;
     document.getElementById(STOP_BTN_ID).disabled = false;
@@ -60,3 +62,6 @@ function onUpdate(timestamp){
     looper.updateFuncId = window.requestAnimationFrame(onUpdate);
 }
 
+window.onload = ()=>{
+    init();
+};

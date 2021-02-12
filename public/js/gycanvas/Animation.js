@@ -32,10 +32,9 @@ class GYAnimation{
         let ret = new Array(this.from.length);
 
         for(let i = 0;i<this.from.length;i++){
-            ret[i] = this.interpolate(this.from[i], this.to[i]);
+            ret[i] = this.interpolate() * (this.to[i] - this.from[i]) + this.from[i];
         }
 
-        console.log(`@ ${ret[0]} : ${ret[1]}`);
         this.onUpdate(ret);
     }
 
@@ -49,9 +48,28 @@ class GYLinearAnimation extends GYAnimation{
         super(to, duration, onStart, onUpdate, onDone);
     }
 
-    interpolate(from, to) {
-        let t = this.time_ratio;
-        return to * t + from;
+    interpolate() {
+        return this.time_ratio;
+    }
+}
+
+class GYQuadEaseInAnimation extends GYAnimation{
+    constructor(to, duration, onStart, onUpdate, onDone) {
+        super(to, duration, onStart, onUpdate, onDone);
+    }
+
+    interpolate() {
+        return this.time_ratio * this.time_ratio;
+    }
+}
+
+class GYQuadEaseOutAnimation extends GYAnimation{
+    constructor(to, duration, onStart, onUpdate, onDone) {
+        super(to, duration, onStart, onUpdate, onDone);
+    }
+
+    interpolate() {
+        return -this.time_ratio * (this.time_ratio - 2);
     }
 }
 
@@ -60,14 +78,12 @@ class GYQuadEaseInOutAnimation extends GYAnimation{
         super(to, duration, onStart, onUpdate, onDone);
     }
 
-    interpolate(from, to) {
-        let t = this.time_ratio * 2.0;
-
-        if(t < 1.0){
-            return to/2.0*t*t + from;
+    interpolate() {
+        let t = this.time_ratio * 2;
+        if(t < 1){
+            return t * t / 2;
         }
-
-        t -= 1.0;
-        return -to/2.0 * (t*(t-2.0)-1.0) + from;
+        t--;
+        return -(t * (t - 2) - 1) / 2;
     }
 }
